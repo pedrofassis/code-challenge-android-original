@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +12,6 @@ import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.Toast;
 
 import com.arctouch.codechallenge.R;
 import com.arctouch.codechallenge.model.Movie;
@@ -41,7 +39,7 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(R.id.root, homeFragment, "home").commit();
         }
-        homeFragment.setListener(item -> showDetails(item));
+        homeFragment.setListener(this::showDetails);
     }
 
     @Override
@@ -66,7 +64,7 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
     private void showSearch(String query) {
         if (searchFragment == null)
             searchFragment = new SearchFragment();
-        searchFragment.setListener(item -> showDetails(item));
+        searchFragment.setListener(this::showDetails);
         searchFragment.setQuery(query);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
@@ -79,9 +77,11 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main, menu);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
-        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-        searchView.setQueryRefinementEnabled(true);
+        if (searchManager != null) {
+            searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+            searchView.setQueryRefinementEnabled(true);
+        }
         return true;
     }
 
@@ -103,6 +103,13 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
 
     @Override
     public void onBackStackChanged() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(
+                getSupportFragmentManager().getBackStackEntryCount() > 0);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         getSupportActionBar().setDisplayHomeAsUpEnabled(
                 getSupportFragmentManager().getBackStackEntryCount() > 0);
     }

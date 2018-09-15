@@ -4,4 +4,5 @@
     <string name="search_hint">Procurar por nome</string>
     <string name="backdrop_image_content_descriptor">Backdrop</string>
     <string name="poster_image_content_descriptor">Movie poster</string>
+    <string name="overview">Sinopse</string>
 </resources>
