@@ -36,4 +36,13 @@ public interface TmdbApi {
             @Query("api_key") String apiKey,
             @Query("language") String language
     );
+
+    @GET("search/movie")
+    Observable<UpcomingMoviesResponse> searchMovies(
+            @Query("api_key") String apiKey,
+            @Query("language") String language,
+            @Query("page") Long page,
+            //@Query("region") String region
+            @Query("query") String query
+    );
 }

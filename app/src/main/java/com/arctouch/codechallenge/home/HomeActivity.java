@@ -1,51 +1,109 @@
 package com.arctouch.codechallenge.home;
 
+import android.app.SearchManager;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v7.widget.RecyclerView;
-import android.view.View;
-import android.widget.ProgressBar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.arctouch.codechallenge.R;
-import com.arctouch.codechallenge.api.TmdbApi;
-import com.arctouch.codechallenge.base.BaseActivity;
-import com.arctouch.codechallenge.data.Cache;
-import com.arctouch.codechallenge.model.Genre;
 import com.arctouch.codechallenge.model.Movie;
 
-import java.util.ArrayList;
+public class HomeActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
-
-public class HomeActivity extends BaseActivity {
-
-    private RecyclerView recyclerView;
-    private ProgressBar progressBar;
+    HomeFragment homeFragment;
+    SearchFragment searchFragment;
+    MovieDetailsFragment movieDetailsFragment;
+    SearchView searchView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
-        this.recyclerView = findViewById(R.id.recyclerView);
-        this.progressBar = findViewById(R.id.progressBar);
+        FragmentManager fm = getSupportFragmentManager();
+        fm.addOnBackStackChangedListener(this);
+        homeFragment = (HomeFragment) fm.findFragmentByTag("home");
+        movieDetailsFragment = (MovieDetailsFragment) fm.findFragmentByTag("details");
+        searchFragment = (SearchFragment) fm.findFragmentByTag("search");
 
-        api.upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, 1L, TmdbApi.DEFAULT_REGION)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(response -> {
-                    for (Movie movie : response.results) {
-                        movie.genres = new ArrayList<>();
-                        for (Genre genre : Cache.getGenres()) {
-                            if (movie.genreIds.contains(genre.id)) {
-                                movie.genres.add(genre);
-                            }
-                        }
-                    }
+        if (homeFragment == null) {
+            homeFragment = new HomeFragment();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(R.id.root, homeFragment, "home").commit();
+        }
+        homeFragment.setListener(item -> showDetails(item));
+    }
 
-                    recyclerView.setAdapter(new HomeAdapter(response.results));
-                    progressBar.setVisibility(View.GONE);
-                });
+    @Override
+    protected void onNewIntent(Intent intent) {
+        setIntent(intent);
+        if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+            String query = intent.getStringExtra(SearchManager.QUERY);
+            showSearch(query);
+        }
+    }
+
+    private void showDetails(Movie item) {
+        if (movieDetailsFragment == null)
+            movieDetailsFragment = new MovieDetailsFragment();
+        movieDetailsFragment.setData(item);
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.root, movieDetailsFragment, "details").addToBackStack("home");
+        ft.commit();
+    }
+
+    private void showSearch(String query) {
+        if (searchFragment == null)
+            searchFragment = new SearchFragment();
+        searchFragment.setListener(item -> showDetails(item));
+        searchFragment.setQuery(query);
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.replace(R.id.root, searchFragment, "search").addToBackStack("home");
+        ft.commit();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+        searchView.setQueryRefinementEnabled(true);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                FragmentManager fm = getSupportFragmentManager();
+                if (fm.getBackStackEntryCount() > 0) {
+                    fm.popBackStack();
+                    searchView.setQuery(null, false);
+                    searchView.onActionViewCollapsed();
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onBackStackChanged() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(
+                getSupportFragmentManager().getBackStackEntryCount() > 0);
     }
 }
