@@ -72,6 +72,7 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
             ft.add(R.id.root, searchFragment, "search").addToBackStack("home");
             ft.commit();
         }
+        searchView.clearFocus();
     }
 
     @Override
@@ -83,6 +84,19 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
             searchView = (SearchView) menu.findItem(R.id.menu_search).getActionView();
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
             searchView.setQueryRefinementEnabled(true);
+            searchView.setSuggestionsAdapter(null);
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return query.length() < 4; //number of char to limit
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    searchView.setSubmitButtonEnabled(newText.length() >= 4);
+                    return true;
+                }
+            });
         }
         return true;
     }
