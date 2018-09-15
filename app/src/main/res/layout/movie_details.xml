@@ -17,6 +17,7 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentTop="true"
             android:alpha="0.2"
+            android:contentDescription="@string/backdrop_image_content_descriptor"
             android:isScrollContainer="true"
             android:scaleType="centerCrop"
             app:srcCompat="@android:color/transparent" />
@@ -29,6 +30,7 @@
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
             android:adjustViewBounds="true"
+            android:contentDescription="@string/poster_image_content_descriptor"
             android:importantForAccessibility="no"
             android:scaleType="fitCenter"
             android:src="@drawable/ic_image_placeholder" />

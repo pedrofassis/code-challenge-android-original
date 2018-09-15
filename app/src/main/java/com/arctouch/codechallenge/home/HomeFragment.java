@@ -1,6 +1,7 @@
 package com.arctouch.codechallenge.home;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -13,15 +14,13 @@ import android.widget.ProgressBar;
 
 import com.arctouch.codechallenge.R;
 import com.arctouch.codechallenge.api.Tmdb;
-import com.arctouch.codechallenge.api.TmdbApi;
 import com.arctouch.codechallenge.data.Cache;
 import com.arctouch.codechallenge.model.Genre;
+import com.arctouch.codechallenge.model.GenreResponse;
 import com.arctouch.codechallenge.model.Movie;
+import com.arctouch.codechallenge.model.UpcomingMoviesResponse;
 
 import java.util.ArrayList;
-
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.schedulers.Schedulers;
 
 public class HomeFragment extends Fragment {
     View v;
@@ -45,7 +44,7 @@ public class HomeFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (v == null)
             v = View.inflate(getActivity(), R.layout.home_fragment, null);
 
@@ -91,13 +90,10 @@ public class HomeFragment extends Fragment {
                 }));
 
         if (Cache.getGenres().size() == 0) {
-            Tmdb.getInstance().genres(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(response -> {
-                        Cache.setGenres(response.genres);
-                        loadFirstPage();
-                    });
+            Tmdb.getInstance(getActivity()).getGenres(result -> {
+                Cache.setGenres(((GenreResponse) result).genres);
+                loadFirstPage();
+            });
         }
         else {
             progressBar.setVisibility(View.GONE);
@@ -106,10 +102,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadFirstPage() {
-        Tmdb.getInstance().upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, 1L, TmdbApi.DEFAULT_REGION)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(r -> {
+        Tmdb.getInstance(getActivity()).getUpcomingMovies(1L, result ->  {
+            UpcomingMoviesResponse r = (UpcomingMoviesResponse) result;
                     for (Movie movie : r.results) {
                         movie.genres = new ArrayList<>();
                         for (Genre genre : Cache.getGenres()) {
@@ -131,11 +125,8 @@ public class HomeFragment extends Fragment {
     }
 
     private void loadNextPage() {
-        //Log.d("HomeActivity", "loadNextPage: " + currentPage);
-        Tmdb.getInstance().upcomingMovies(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE, (long) currentPage, TmdbApi.DEFAULT_REGION)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(r -> {
+        Tmdb.getInstance(getActivity()).getUpcomingMovies(currentPage, result ->  {
+            UpcomingMoviesResponse r = (UpcomingMoviesResponse) result;
                     for (Movie movie : r.results) {
                         movie.genres = new ArrayList<>();
                         for (Genre genre : Cache.getGenres()) {
