@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Code Challenge</string>
     <string name="movie_and_genres">%s - %s</string>
-    <string name="search_hint">Procurar por nome</string>
+    <string name="search_hint"><i>Procurar por nome</i></string>
     <string name="backdrop_image_content_descriptor">Backdrop</string>
     <string name="poster_image_content_descriptor">Movie poster</string>
     <string name="overview">Sinopse</string>

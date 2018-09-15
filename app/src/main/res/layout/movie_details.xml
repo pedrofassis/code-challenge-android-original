@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:fillViewport="true"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_width="match_parent">
+    android:background="@android:color/background_light"
+    android:fillViewport="true">
 
     <ImageView
         android:id="@+id/backdropImageView"
@@ -25,14 +26,14 @@
             <ImageView
                 android:id="@+id/posterImageView"
                 android:layout_width="120dp"
-                android:layout_height="wrap_content"
+                android:layout_height="190dp"
                 android:layout_alignParentTop="true"
                 android:layout_marginStart="10dp"
                 android:layout_marginTop="10dp"
-                android:adjustViewBounds="true"
+                android:adjustViewBounds="false"
                 android:contentDescription="@string/poster_image_content_descriptor"
                 android:importantForAccessibility="no"
-                android:scaleType="fitCenter"
+                android:scaleType="fitXY"
                 android:src="@drawable/ic_image_placeholder" />
 
             <TextView

@@ -145,6 +145,17 @@ public class HomeFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        if (v == null)
+            return;
+        if (isLoading)
+            return;
+        if ((adapter == null) || (adapter.getItemCount() == 0))
+            loadFirstPage();
+    }
+
+    @Override
     public void onStop() {
         v = null;
         super.onStop();

@@ -1,16 +1,15 @@
 package com.arctouch.codechallenge.home;
 
 import android.graphics.drawable.Drawable;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -48,7 +47,7 @@ public class MovieDetailsFragment extends Fragment {
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (v == null)
             v = View.inflate(getActivity(), R.layout.movie_details, null);
 
@@ -72,7 +71,6 @@ public class MovieDetailsFragment extends Fragment {
     private void fillView() {
         if ((v == null) || (movie == null))
             return;
-        //posterImageView.setImageBitmap(null);
         backdropImageView.setImageBitmap(null);
         titleTextView.setText(movie.title);
         genresTextView.setText(TextUtils.join(", ", movie.genres));

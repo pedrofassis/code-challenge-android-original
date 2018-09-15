@@ -57,7 +57,7 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         movieDetailsFragment.setData(item);
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.root, movieDetailsFragment, "details").addToBackStack("home");
+        ft.add(R.id.root, movieDetailsFragment, "details").addToBackStack("home");
         ft.commit();
     }
 
@@ -66,10 +66,12 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
             searchFragment = new SearchFragment();
         searchFragment.setListener(this::showDetails);
         searchFragment.setQuery(query);
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.root, searchFragment, "search").addToBackStack("home");
-        ft.commit();
+        if (!searchFragment.isAdded()) {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(R.id.root, searchFragment, "search").addToBackStack("home");
+            ft.commit();
+        }
     }
 
     @Override
@@ -92,9 +94,8 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
                 FragmentManager fm = getSupportFragmentManager();
                 if (fm.getBackStackEntryCount() > 0) {
                     fm.popBackStack();
-                    searchView.setQuery(null, false);
-                    searchView.onActionViewCollapsed();
                 }
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -105,6 +106,11 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
     public void onBackStackChanged() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(
                 getSupportFragmentManager().getBackStackEntryCount() > 0);
+        FragmentManager fm = getSupportFragmentManager();
+        if (fm.getBackStackEntryCount() == 0) {
+            searchView.setQuery(null, false);
+            searchView.onActionViewCollapsed();
+        }
     }
 
     @Override

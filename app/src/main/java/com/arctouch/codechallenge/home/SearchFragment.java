@@ -35,6 +35,7 @@ public class SearchFragment extends Fragment {
     private int currentPage = PAGE_START;
     private SearchFragmentInterface listener;
     private String query;
+    private boolean searchPending = false;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -88,8 +89,9 @@ public class SearchFragment extends Fragment {
                     if (listener != null)
                         listener.itemSelected(adapter.getItem(position));
                 }));
-
-        doSearch();
+        progressBar.setVisibility(View.GONE);
+        if (searchPending)
+            doSearch();
         return v;
     }
 
@@ -99,8 +101,13 @@ public class SearchFragment extends Fragment {
     }
 
     private void doSearch() {
-        if ((v == null) || (query == null))
+        if (query == null)
             return;
+        if (v == null) {
+            searchPending = true;
+            return;
+        }
+        searchPending = false;
         loadFirstPage();
     }
 
