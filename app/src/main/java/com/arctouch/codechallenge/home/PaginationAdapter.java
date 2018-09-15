@@ -97,7 +97,6 @@ public class PaginationAdapter extends RecyclerView.Adapter<PaginationAdapter.Vi
 //                Do nothing
                 break;
         }
-
     }
 
     @Override
@@ -143,11 +142,6 @@ public class PaginationAdapter extends RecyclerView.Adapter<PaginationAdapter.Vi
             remove(getItem(0));
         }
     }
-
-    public boolean isEmpty() {
-        return getItemCount() == 0;
-    }
-
 
     public void addLoadingFooter() {
         isLoadingAdded = true;

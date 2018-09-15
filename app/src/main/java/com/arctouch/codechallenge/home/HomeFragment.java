@@ -94,53 +94,54 @@ public class HomeFragment extends Fragment {
                 Cache.setGenres(((GenreResponse) result).genres);
                 loadFirstPage();
             });
-        }
-        else {
+        } else {
             progressBar.setVisibility(View.GONE);
         }
         return v;
     }
 
     private void loadFirstPage() {
-        Tmdb.getInstance(getActivity()).getUpcomingMovies(1L, result ->  {
+        currentPage = PAGE_START;
+        Tmdb.getInstance(getActivity()).getUpcomingMovies(1L, result -> {
             UpcomingMoviesResponse r = (UpcomingMoviesResponse) result;
-                    for (Movie movie : r.results) {
-                        movie.genres = new ArrayList<>();
-                        for (Genre genre : Cache.getGenres()) {
-                            if (movie.genreIds.contains(genre.id)) {
-                                movie.genres.add(genre);
-                            }
-                        }
+            for (Movie movie : r.results) {
+                movie.genres = new ArrayList<>();
+                for (Genre genre : Cache.getGenres()) {
+                    if (movie.genreIds.contains(genre.id)) {
+                        movie.genres.add(genre);
                     }
-                    adapter.addAll(r.results);
-                    progressBar.setVisibility(View.GONE);
-                    TOTAL_PAGES = r.totalPages;
-                    if (TOTAL_PAGES > 1) {
-                        adapter.addLoadingFooter();
-                    }
-                    else {
-                        isLastPage = true;
-                    }
-                });
+                }
+            }
+            adapter.addAll(r.results);
+            progressBar.setVisibility(View.GONE);
+            TOTAL_PAGES = r.totalPages;
+            isLastPage = TOTAL_PAGES == 1;
+            if (!isLastPage) {
+                adapter.addLoadingFooter();
+            }
+        });
     }
 
     private void loadNextPage() {
-        Tmdb.getInstance(getActivity()).getUpcomingMovies(currentPage, result ->  {
+        Tmdb.getInstance(getActivity()).getUpcomingMovies(currentPage, result -> {
             UpcomingMoviesResponse r = (UpcomingMoviesResponse) result;
-                    for (Movie movie : r.results) {
-                        movie.genres = new ArrayList<>();
-                        for (Genre genre : Cache.getGenres()) {
-                            if (movie.genreIds.contains(genre.id)) {
-                                movie.genres.add(genre);
-                            }
-                        }
+            for (Movie movie : r.results) {
+                movie.genres = new ArrayList<>();
+                for (Genre genre : Cache.getGenres()) {
+                    if (movie.genreIds.contains(genre.id)) {
+                        movie.genres.add(genre);
                     }
-                    adapter.removeLoadingFooter();
-                    isLoading = false;
-                    TOTAL_PAGES = r.totalPages;
-                    isLastPage = TOTAL_PAGES <= currentPage;
-                    adapter.addAll(r.results);
-                });
+                }
+            }
+            adapter.removeLoadingFooter();
+            isLoading = false;
+            TOTAL_PAGES = r.totalPages;
+            isLastPage = TOTAL_PAGES <= currentPage;
+            adapter.addAll(r.results);
+            if (!isLastPage) {
+                adapter.addLoadingFooter();
+            }
+        });
     }
 
     @Override

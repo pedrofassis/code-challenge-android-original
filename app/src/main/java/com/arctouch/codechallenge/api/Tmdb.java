@@ -2,16 +2,8 @@ package com.arctouch.codechallenge.api;
 
 import android.content.Context;
 import android.support.v4.os.ConfigurationCompat;
-import android.view.View;
 
-import com.arctouch.codechallenge.data.Cache;
-import com.arctouch.codechallenge.model.Genre;
-import com.arctouch.codechallenge.model.GenreResponse;
-import com.arctouch.codechallenge.model.Movie;
-
-import java.util.ArrayList;
 import java.util.Locale;
-import java.util.Observable;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;

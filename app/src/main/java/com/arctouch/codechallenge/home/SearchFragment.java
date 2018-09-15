@@ -90,19 +90,6 @@ public class SearchFragment extends Fragment {
                 }));
 
         doSearch();
-
-        /*if (Cache.getGenres().size() == 0) {
-            Tmdb.getInstance().genres(TmdbApi.API_KEY, TmdbApi.DEFAULT_LANGUAGE)
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(response -> {
-                        Cache.setGenres(response.genres);
-                        loadFirstPage();
-                    });
-        }
-        else {
-            progressBar.setVisibility(View.GONE);
-        }*/
         return v;
     }
 
@@ -118,47 +105,50 @@ public class SearchFragment extends Fragment {
     }
 
     private void loadFirstPage() {
+        currentPage = PAGE_START;
         adapter.clear();
         progressBar.setVisibility(View.VISIBLE);
         Tmdb.getInstance(getActivity()).searchMovies(1L, query, result -> {
             UpcomingMoviesResponse r = (UpcomingMoviesResponse) result;
-                    for (Movie movie : r.results) {
-                        movie.genres = new ArrayList<>();
-                        for (Genre genre : Cache.getGenres()) {
-                            if (movie.genreIds.contains(genre.id)) {
-                                movie.genres.add(genre);
-                            }
-                        }
+            for (Movie movie : r.results) {
+                movie.genres = new ArrayList<>();
+                for (Genre genre : Cache.getGenres()) {
+                    if (movie.genreIds.contains(genre.id)) {
+                        movie.genres.add(genre);
                     }
-                    adapter.addAll(r.results);
-                    progressBar.setVisibility(View.GONE);
-                    TOTAL_PAGES = r.totalPages;
-                    if (TOTAL_PAGES > 1) {
-                        adapter.addLoadingFooter();
-                    }
-                    else {
-                        isLastPage = true;
-                    }
-                });
+                }
+            }
+            adapter.addAll(r.results);
+            progressBar.setVisibility(View.GONE);
+            TOTAL_PAGES = r.totalPages;
+            isLastPage = TOTAL_PAGES == 1;
+            if (!isLastPage) {
+                adapter.addLoadingFooter();
+            }
+
+        });
     }
 
     private void loadNextPage() {
         Tmdb.getInstance(getActivity()).searchMovies((long) currentPage, query, result -> {
             UpcomingMoviesResponse r = (UpcomingMoviesResponse) result;
-                    for (Movie movie : r.results) {
-                        movie.genres = new ArrayList<>();
-                        for (Genre genre : Cache.getGenres()) {
-                            if (movie.genreIds.contains(genre.id)) {
-                                movie.genres.add(genre);
-                            }
-                        }
+            for (Movie movie : r.results) {
+                movie.genres = new ArrayList<>();
+                for (Genre genre : Cache.getGenres()) {
+                    if (movie.genreIds.contains(genre.id)) {
+                        movie.genres.add(genre);
                     }
-                    adapter.removeLoadingFooter();
-                    isLoading = false;
-                    TOTAL_PAGES = r.totalPages;
-                    isLastPage = TOTAL_PAGES <= currentPage;
-                    adapter.addAll(r.results);
-                });
+                }
+            }
+            adapter.removeLoadingFooter();
+            isLoading = false;
+            TOTAL_PAGES = r.totalPages;
+            isLastPage = TOTAL_PAGES <= currentPage;
+            adapter.addAll(r.results);
+            if (!isLastPage) {
+                adapter.addLoadingFooter();
+            }
+        });
     }
 
     @Override
