@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 
 import com.arctouch.codechallenge.R;
-import com.arctouch.codechallenge.data.GenresDataSource;
 import com.arctouch.codechallenge.model.Movie;
 
 public class HomeFragment extends Fragment {
@@ -30,9 +29,9 @@ public class HomeFragment extends Fragment {
     private HomeFragmentInterface listener;
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        GenresDataSource.getGenresList().observe(this, s -> model.loadNextPage());
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //GenresDataSource.getGenresList().observe(this, s -> model.loadNextPage());
         model = ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
         model.getMoviesList().observe(this, r -> listUpdated());
     }
@@ -85,6 +84,10 @@ public class HomeFragment extends Fragment {
                 }));
 
         return v;
+    }
+
+    public void loadFirstPage() {
+        model.loadNextPage();
     }
 
     private void listUpdated() {

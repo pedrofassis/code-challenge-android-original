@@ -36,7 +36,7 @@ public class HomeViewModel extends ViewModel {
     public ArrayList<Movie> getMovies() {
         if (getMoviesList().getValue() == null) {
             getMoviesList().setValue(new ArrayList<>());
-            loadNextPage();
+            //loadNextPage();
         }
         return getMoviesList().getValue();
     }

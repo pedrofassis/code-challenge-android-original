@@ -15,8 +15,8 @@ public class GenresDataSource {
     public static MutableLiveData<List<Genre>> getGenresList() {
         if (genresList == null) {
             genresList = new MutableLiveData<>();
+            update();
         }
-        update();
         return genresList;
     }
 

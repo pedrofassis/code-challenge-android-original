@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import com.arctouch.codechallenge.R;
 import com.arctouch.codechallenge.api.TmdbApi;
 import com.arctouch.codechallenge.api.TmdbImpl;
+import com.arctouch.codechallenge.data.GenresDataSource;
 import com.arctouch.codechallenge.model.Movie;
 
 public class HomeActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
@@ -33,6 +34,8 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         setContentView(R.layout.home_activity);
 
         TmdbImpl.init(this);
+        GenresDataSource.getGenresList();
+
         FragmentManager fm = getSupportFragmentManager();
         fm.addOnBackStackChangedListener(this);
         homeFragment = (HomeFragment) fm.findFragmentByTag("home");
@@ -40,6 +43,11 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         searchFragment = (SearchFragment) fm.findFragmentByTag("search");
 
         if (homeFragment == null) {
+            GenresDataSource.getGenresList().observe(this, s -> {
+                        homeFragment.loadFirstPage();
+                        GenresDataSource.getGenresList().removeObservers(this);
+                    }
+            );
             homeFragment = new HomeFragment();
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(R.id.root, homeFragment, "home").commit();
