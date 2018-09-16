@@ -88,10 +88,6 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         searchView.clearFocus();
     }
 
-    public void clearFragmentList() {
-
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -126,7 +122,6 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
                 if (fm.getBackStackEntryCount() > 0) {
                     fm.popBackStack();
                 }
-
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -137,6 +132,7 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
     public void onBackStackChanged() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(
                 getSupportFragmentManager().getBackStackEntryCount() > 0);
+
         FragmentManager fm = getSupportFragmentManager();
         if (fm.getBackStackEntryCount() == 0) {
             searchView.setQuery(null, false);
@@ -149,5 +145,7 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         super.onResume();
         getSupportActionBar().setDisplayHomeAsUpEnabled(
                 getSupportFragmentManager().getBackStackEntryCount() > 0);
+        if (searchFragment != null)
+            searchFragment.setListener(this::showDetails);
     }
 }

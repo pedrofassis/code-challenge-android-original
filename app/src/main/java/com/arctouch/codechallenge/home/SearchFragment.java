@@ -19,15 +19,15 @@ import com.arctouch.codechallenge.model.Movie;
 import java.util.ArrayList;
 
 public class SearchFragment extends Fragment {
-    View v;
+    private View v;
     private ProgressBar progressBar;
 
-    RecyclerView recyclerView;
-    PaginationAdapter adapter;
-    LinearLayoutManager linearLayoutManager;
+    private RecyclerView recyclerView;
+    private PaginationAdapter adapter;
+    private LinearLayoutManager linearLayoutManager;
     private SearchFragmentInterface listener;
 
-    SearchViewModel model;
+    private SearchViewModel model;
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
