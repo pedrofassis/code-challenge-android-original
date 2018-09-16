@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Code Challenge</string>
+    <string name="backdrop_image_content_descriptor">Backdrop image</string>
+    <string name="search_hint">Search by name</string>
+    <string name="poster_image_content_descriptor">Movie poster</string>
+    <string name="overview">Overview</string>
+</resources>
