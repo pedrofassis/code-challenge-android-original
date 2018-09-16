@@ -27,7 +27,7 @@ public class MovieDetailsViewModel extends ViewModel {
     public String getBackdropUrl() {
         if ((getMovie().getValue() == null) || (TextUtils.isEmpty(getMovie().getValue().backdropPath)))
             return null;
-        return movieImageUrlBuilder.buildPosterUrl(movie.getValue().backdropPath);
+        return movieImageUrlBuilder.buildBackdropUrl(movie.getValue().backdropPath);
     }
 
     public void setMovie(Movie pMovie) {
