@@ -1,5 +1,14 @@
 package com.arctouch.codechallenge.data;
 
+/**
+ *  GenresDataSource
+ *  Data source for genres list
+ *  Acts as cache
+ *  Genres list gets updated at the very beginning of app life cycle
+ *  All application flow depends initially of me - better be good
+ *  TODO - Establish update checkpoints through app life
+ */
+
 import android.arch.lifecycle.MutableLiveData;
 
 import com.arctouch.codechallenge.api.TmdbImpl;
@@ -10,6 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class GenresDataSource {
+    /**
+     * LiveData for genres list
+     * Gets updated once on app life cycle, at its very beggining
+     *
+     */
     private static MutableLiveData<List<Genre>> genresList;
 
     public static MutableLiveData<List<Genre>> getGenresList() {

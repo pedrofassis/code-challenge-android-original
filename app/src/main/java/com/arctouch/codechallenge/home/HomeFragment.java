@@ -1,5 +1,11 @@
 package com.arctouch.codechallenge.home;
 
+/**
+ *  HomeFragment
+ *  First fragment added to app
+ *  Handles upcoming movies list
+ */
+
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,22 +23,22 @@ import com.arctouch.codechallenge.R;
 import com.arctouch.codechallenge.model.Movie;
 
 public class HomeFragment extends Fragment {
-    View v;
+    private View v;
     private ProgressBar progressBar;
 
-    RecyclerView recyclerView;
-    PaginationAdapter adapter;
-    LinearLayoutManager linearLayoutManager;
+    private RecyclerView recyclerView;
+    private PaginationAdapter adapter;
+    private LinearLayoutManager linearLayoutManager;
 
-    HomeViewModel model;
+    private HomeViewModel model;
 
     private HomeFragmentInterface listener;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //GenresDataSource.getGenresList().observe(this, s -> model.loadNextPage());
         model = ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
+        //Register observable for upcoming movies list
         model.getMoviesList().observe(this, r -> listUpdated());
     }
 
@@ -42,11 +48,17 @@ public class HomeFragment extends Fragment {
         if (v == null)
             v = View.inflate(getActivity(), R.layout.home_fragment, null);
 
+        // Here we update the reference for the HomeActivity on ViewModel after screen rotation
+        // This is necessary because of the reference for the adapter
+        // TODO - Better way?
         model = ViewModelProviders.of(getActivity()).get(HomeViewModel.class);
+
         recyclerView = v.findViewById(R.id.recyclerView);
         this.progressBar = v.findViewById(R.id.progressBar);
 
-        if (adapter == null)
+        // Adapter will hold directly a reference for the ViewModel list
+        // to avoid memory usage
+        if (adapter == null)    // Avoid recreation after screen rotation
             adapter = new PaginationAdapter(getActivity(), model.getMovies());
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
@@ -59,11 +71,6 @@ public class HomeFragment extends Fragment {
             protected void loadMoreItems() {
                 if (!model.isLoading())
                     model.loadNextPage();
-            }
-
-            @Override
-            public int getTotalPageCount() {
-                return model.getTotalPages();
             }
 
             @Override

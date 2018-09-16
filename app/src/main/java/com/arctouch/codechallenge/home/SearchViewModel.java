@@ -1,5 +1,10 @@
 package com.arctouch.codechallenge.home;
 
+/**
+ *  Handles data for SearchFragment
+ */
+
+
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
@@ -36,10 +41,6 @@ public class SearchViewModel extends ViewModel {
             moviesList.setValue(new ArrayList<>());
         }
         return moviesList;
-    }
-
-    public int getTotalPages() {
-        return (int)totalPages;
     }
 
     private void reset() {

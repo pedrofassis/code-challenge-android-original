@@ -21,6 +21,9 @@ import java.util.List;
 
 /**
  * Created by Suleiman on 19/10/16.
+ * Modified by Pedro - :)
+ *  Handles views for RecycleView
+ *  Adds one item at the bottom of the list if necessary to indicate more pages available
  */
 
 public class PaginationAdapter extends RecyclerView.Adapter<PaginationAdapter.ViewHolder> {
@@ -113,17 +116,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<PaginationAdapter.Vi
         return (position == movies.size()) ? LOADING : ITEM;
     }
 
-
-
-
-    /*
-   Helpers
-   _________________________________________________________________________________________________
-    */
-
-    public void addLoadingFooter() {
-        isLoadingAdded = true;
-    }
+    public void addLoadingFooter() { isLoadingAdded = true; }
 
     public void removeLoadingFooter() {
         isLoadingAdded = false;

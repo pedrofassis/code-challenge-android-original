@@ -1,5 +1,13 @@
 package com.arctouch.codechallenge.home;
 
+/**
+ *  Entry poiint for the application
+ *  Handles fragments, initializations and search input
+ *  Data persistence attempt for screen rotation starts here
+ *      as I search for already instantiated fragments - they hold ModelViews!
+ *
+ */
+
 import android.app.SearchManager;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
@@ -10,13 +18,11 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.arctouch.codechallenge.R;
-import com.arctouch.codechallenge.api.TmdbApi;
 import com.arctouch.codechallenge.api.TmdbImpl;
 import com.arctouch.codechallenge.data.GenresDataSource;
 import com.arctouch.codechallenge.model.Movie;
@@ -33,8 +39,8 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
-        TmdbImpl.init(this);
-        GenresDataSource.getGenresList();
+        TmdbImpl.init(this);    //Initialize locale information for api
+        GenresDataSource.getGenresList();   //Triggers genres list fetching to hurry up initialization
 
         FragmentManager fm = getSupportFragmentManager();
         fm.addOnBackStackChangedListener(this);
@@ -52,9 +58,13 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(R.id.root, homeFragment, "home").commit();
         }
-        homeFragment.setListener(this::showDetails);
+        homeFragment.setListener(this::showDetailsFragment);
     }
 
+    /**
+     * Receives search intent from Android
+     * @param intent
+     */
     @Override
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
@@ -64,7 +74,11 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         }
     }
 
-    private void showDetails(Movie item) {
+    /**
+     * Triggered after user clicks on an movie item at HomeFragment or SearchFragment
+     * @param item
+     */
+    private void showDetailsFragment(Movie item) {
         ViewModelProviders.of(this).get(MovieDetailsViewModel.class).setMovie(item);
         if (movieDetailsFragment == null)
             movieDetailsFragment = new MovieDetailsFragment();
@@ -78,12 +92,16 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         }
     }
 
+    /**
+     * Triggered after user submits a search query
+     * @param query
+     */
     private void showSearch(String query) {
         SearchViewModel model = ViewModelProviders.of(this).get(SearchViewModel.class);
         model.search(query);
         if (searchFragment == null)
             searchFragment = new SearchFragment();
-        searchFragment.setListener(this::showDetails);
+        searchFragment.setListener(this::showDetailsFragment);
         if (movieDetailsFragment != null)
             getSupportFragmentManager().beginTransaction().remove(movieDetailsFragment).commitNow();
         if (!searchFragment.isAdded()) {
@@ -95,6 +113,11 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         searchView.clearFocus();
     }
 
+    /**
+     * Initializes SearchView on ActionBar
+     * @param menu
+     * @return
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -121,6 +144,11 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         return true;
     }
 
+    /**
+     * Used to handle 'home' button on ActionBar
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -135,6 +163,10 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         }
     }
 
+    /**
+     * We observe the fragments stack to close SearchView on ActionBar
+     * and show/hide 'home' button
+     */
     @Override
     public void onBackStackChanged() {
         getSupportActionBar().setDisplayHomeAsUpEnabled(
@@ -147,12 +179,15 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         }
     }
 
+    /**
+     * Ensure persistence after screen rotation
+     */
     @Override
     protected void onResume() {
         super.onResume();
         getSupportActionBar().setDisplayHomeAsUpEnabled(
                 getSupportFragmentManager().getBackStackEntryCount() > 0);
         if (searchFragment != null)
-            searchFragment.setListener(this::showDetails);
+            searchFragment.setListener(this::showDetailsFragment);
     }
 }

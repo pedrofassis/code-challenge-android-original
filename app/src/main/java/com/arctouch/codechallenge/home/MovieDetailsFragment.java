@@ -1,5 +1,10 @@
 package com.arctouch.codechallenge.home;
 
+/**
+ *  MovieDetailsFragment
+ *  Handles movie details data display
+ */
+
 import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -12,12 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.arctouch.codechallenge.R;
 import com.arctouch.codechallenge.model.Movie;
-import com.arctouch.codechallenge.util.MovieImageUrlBuilder;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -26,8 +29,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.Target;
 
 public class MovieDetailsFragment extends Fragment {
-    View v;
-    MovieDetailsViewModel model;
+    private View v;
+    private MovieDetailsViewModel model;
 
     private TextView titleTextView;
     private TextView genresTextView;

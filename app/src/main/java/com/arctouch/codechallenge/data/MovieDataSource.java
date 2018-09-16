@@ -1,5 +1,11 @@
 package com.arctouch.codechallenge.data;
 
+/**
+ *  MoviesDataSource
+ *  Data source for movies list
+ *  Handles upcoming movie list and seatch movies requests
+ */
+
 import com.arctouch.codechallenge.api.TmdbImpl;
 import com.arctouch.codechallenge.model.UpcomingMoviesResponse;
 

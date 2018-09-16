@@ -1,5 +1,9 @@
 package com.arctouch.codechallenge.home;
 
+/**
+ *  Handles data for HomeFragment
+ */
+
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 
@@ -36,7 +40,6 @@ public class HomeViewModel extends ViewModel {
     public ArrayList<Movie> getMovies() {
         if (getMoviesList().getValue() == null) {
             getMoviesList().setValue(new ArrayList<>());
-            //loadNextPage();
         }
         return getMoviesList().getValue();
     }

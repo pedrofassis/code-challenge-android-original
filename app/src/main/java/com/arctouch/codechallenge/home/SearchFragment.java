@@ -1,5 +1,11 @@
 package com.arctouch.codechallenge.home;
 
+/**
+ *  SearchFragment
+ *  Displayed on user search queries
+ *  Handles search movies result
+ */
+
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -62,11 +68,6 @@ public class SearchFragment extends Fragment {
             protected void loadMoreItems() {
                 if (!model.isLoading())
                     model.loadNextPage();
-            }
-
-            @Override
-            public int getTotalPageCount() {
-                return model.getTotalPages();
             }
 
             @Override

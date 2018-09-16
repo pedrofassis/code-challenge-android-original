@@ -1,5 +1,9 @@
 package com.arctouch.codechallenge.home;
 
+/**
+ *  Handles data for MovieDetailsFragment
+ */
+
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.text.TextUtils;
