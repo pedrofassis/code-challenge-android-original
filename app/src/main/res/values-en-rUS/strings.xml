@@ -5,4 +5,5 @@
     <string name="search_hint">Search by name</string>
     <string name="poster_image_content_descriptor">Movie poster</string>
     <string name="overview">Overview</string>
+    <string name="nao_disponivel">Not available for this language :(</string>
 </resources>
