@@ -74,7 +74,6 @@ public class MovieDetailsFragment extends Fragment {
         releaseDateTextView.setText(movie.releaseDate);
         overviewTextView.setText(!TextUtils.isEmpty(movie.overview)? movie.overview :
             getActivity().getString(R.string.nao_disponivel));
-        overviewTitleTextView.setVisibility(movie.overview.length() > 0? View.VISIBLE : View.GONE);
 
         String posterPath = model.getPosterUrl();
         if (!TextUtils.isEmpty(posterPath)) {

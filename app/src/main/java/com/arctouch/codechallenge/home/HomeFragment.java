@@ -90,6 +90,7 @@ public class HomeFragment extends Fragment {
                         listener.itemSelected(adapter.getItem(position));
                 }));
 
+        hideNothingFound();
         return v;
     }
 
@@ -98,13 +99,32 @@ public class HomeFragment extends Fragment {
     }
 
     private void listUpdated() {
-        if (model.getMovies().size() > 0)
-            progressBar.setVisibility(View.GONE);
-        adapter.removeLoadingFooter();
-        adapter.notifyDataSetChanged();
-        if (!model.isLastPage()) {
-            adapter.addLoadingFooter();
+        if (model.getMovies().size() == 0) {
+            if (model.isLoading())
+                progressBar.setVisibility(View.VISIBLE);
+            else
+                showNothingFound();
         }
+        else {
+            progressBar.setVisibility(View.GONE);
+            hideNothingFound();
+            adapter.removeLoadingFooter();
+            adapter.notifyDataSetChanged();
+            if (!model.isLastPage()) {
+                adapter.addLoadingFooter();
+            }
+        }
+    }
+
+    private void showNothingFound() {
+        progressBar.setVisibility(View.GONE);
+        v.findViewById(R.id.imageView).setVisibility(View.VISIBLE);
+        v.findViewById(R.id.textView).setVisibility(View.VISIBLE);
+    }
+
+    private void hideNothingFound() {
+        v.findViewById(R.id.imageView).setVisibility(View.GONE);
+        v.findViewById(R.id.textView).setVisibility(View.GONE);
     }
 
     public void setListener(HomeFragmentInterface listener) {

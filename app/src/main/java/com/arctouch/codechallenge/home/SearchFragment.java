@@ -40,6 +40,7 @@ public class SearchFragment extends Fragment {
     }
 
     private void reset() {
+        hideNothingFound();
         adapter.removeLoadingFooter();
         adapter.notifyDataSetChanged();
         progressBar.setVisibility(View.VISIBLE);
@@ -84,6 +85,7 @@ public class SearchFragment extends Fragment {
         recyclerView.removeOnItemTouchListener(touchListener);
         recyclerView.addOnItemTouchListener(touchListener);
 
+        hideNothingFound();
         return v;
     }
 
@@ -94,9 +96,14 @@ public class SearchFragment extends Fragment {
             });
 
     private void listUpdated() {
-        if (model.getItemCount() == 0)
-            progressBar.setVisibility(View.VISIBLE);
+        if (model.getItemCount() == 0) {
+            if (model.isLoading())
+                progressBar.setVisibility(View.VISIBLE);
+            else
+                showNothingFound();
+        }
         else {
+            hideNothingFound();
             progressBar.setVisibility(View.GONE);
             adapter.removeLoadingFooter();
             if (!model.isLastPage()) {
@@ -104,6 +111,17 @@ public class SearchFragment extends Fragment {
             }
         }
         adapter.notifyDataSetChanged();
+    }
+
+    private void showNothingFound() {
+        progressBar.setVisibility(View.GONE);
+        v.findViewById(R.id.imageView).setVisibility(View.VISIBLE);
+        v.findViewById(R.id.textView).setVisibility(View.VISIBLE);
+    }
+
+    private void hideNothingFound() {
+        v.findViewById(R.id.imageView).setVisibility(View.GONE);
+        v.findViewById(R.id.textView).setVisibility(View.GONE);
     }
 
     public void setListener(SearchFragmentInterface listener) {

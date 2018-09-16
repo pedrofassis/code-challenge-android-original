@@ -6,4 +6,5 @@
     <string name="poster_image_content_descriptor">Capa do filme</string>
     <string name="overview">Sinopse</string>
     <string name="nao_disponivel">Não disponível nesse idioma :(</string>
+    <string name="no_result">Nada encontrado</string>
 </resources>

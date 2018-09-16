@@ -19,7 +19,7 @@ public class HomeViewModel extends ViewModel {
     private long totalPages = 0;
     private MutableLiveData<ArrayList<Movie>> moviesList;
 
-    private boolean isLoading = false;
+    private boolean isLoading = true;
     private int currentPage = 0;
 
     public boolean isLoading() {
@@ -44,16 +44,12 @@ public class HomeViewModel extends ViewModel {
         return getMoviesList().getValue();
     }
 
-    public int getTotalPages() {
-        return (int)totalPages;
-    }
-
     private void updatePage(int Page) {
         isLoading = true;
         MovieDataSource.getUpcoming(Page, r->{
+            isLoading = false;
             totalPages = r.totalPages;
             updateMovies(Page, r.results);
-            isLoading = false;
         });
     }
 

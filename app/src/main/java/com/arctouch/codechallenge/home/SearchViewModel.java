@@ -59,9 +59,9 @@ public class SearchViewModel extends ViewModel {
     private void updatePage(int Page) {
         isLoading = true;
         MovieDataSource.search(currentQuery, Page, r->{
+            isLoading = false;
             totalPages = r.totalPages;
             updateMovies(Page, r.results);
-            isLoading = false;
         });
     }
 
