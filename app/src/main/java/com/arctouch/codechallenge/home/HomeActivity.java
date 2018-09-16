@@ -72,7 +72,6 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
 
     private void showSearch(String query) {
         SearchViewModel model = ViewModelProviders.of(this).get(SearchViewModel.class);
-        model.reset();
         model.search(query);
         if (searchFragment == null)
             searchFragment = new SearchFragment();

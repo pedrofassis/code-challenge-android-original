@@ -47,7 +47,8 @@ public class HomeFragment extends Fragment {
         recyclerView = v.findViewById(R.id.recyclerView);
         this.progressBar = v.findViewById(R.id.progressBar);
 
-        adapter = new PaginationAdapter(getActivity());
+        if (adapter == null)
+            adapter = new PaginationAdapter(getActivity(), model.getMovies());
 
         linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
@@ -83,18 +84,14 @@ public class HomeFragment extends Fragment {
                         listener.itemSelected(adapter.getItem(position));
                 }));
 
-        adapter.addAll(model.getAllMovies());
-        if (adapter.getItemCount() > 0)
-            progressBar.setVisibility(View.GONE);
-
         return v;
     }
 
     private void listUpdated() {
-        progressBar.setVisibility(View.GONE);
+        if (model.getMovies().size() > 0)
+            progressBar.setVisibility(View.GONE);
         adapter.removeLoadingFooter();
-        if (model.getMovies(model.getCurrentPage()) != null)
-            adapter.addAll(model.getMovies(model.getCurrentPage()));
+        adapter.notifyDataSetChanged();
         if (!model.isLastPage()) {
             adapter.addLoadingFooter();
         }

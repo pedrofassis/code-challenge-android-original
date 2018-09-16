@@ -65,9 +65,9 @@ public class PaginationAdapter extends RecyclerView.Adapter<PaginationAdapter.Vi
         }
     }
 
-    PaginationAdapter(Context context) {
+    PaginationAdapter(Context context, ArrayList<Movie> pMovies) {
         this.context = context;
-        movies = new ArrayList<>();
+        movies = pMovies;
     }
 
     @NonNull
@@ -101,12 +101,16 @@ public class PaginationAdapter extends RecyclerView.Adapter<PaginationAdapter.Vi
 
     @Override
     public int getItemCount() {
-        return movies == null ? 0 : movies.size();
+        if (movies == null)
+            return 0;
+        if (!isLoadingAdded)
+            return movies.size();
+        return movies.size() + 1;
     }
 
     @Override
     public int getItemViewType(int position) {
-        return (position == movies.size() - 1 && isLoadingAdded) ? LOADING : ITEM;
+        return (position == movies.size()) ? LOADING : ITEM;
     }
 
 
@@ -117,49 +121,12 @@ public class PaginationAdapter extends RecyclerView.Adapter<PaginationAdapter.Vi
    _________________________________________________________________________________________________
     */
 
-    public void add(Movie mc) {
-        movies.add(mc);
-        notifyItemInserted(movies.size() - 1);
-    }
-
-    public void addAll(List<Movie> mcList) {
-        for (Movie mc : mcList) {
-            add(mc);
-        }
-    }
-
-    private void remove(Movie city) {
-        int position = movies.indexOf(city);
-        if (position > -1) {
-            movies.remove(position);
-            notifyItemRemoved(position);
-        }
-    }
-
-    public void clear() {
-        isLoadingAdded = false;
-        while (getItemCount() > 0) {
-            remove(getItem(0));
-        }
-    }
-
     public void addLoadingFooter() {
         isLoadingAdded = true;
-        add(new Movie());
     }
 
     public void removeLoadingFooter() {
-        if (!isLoadingAdded)
-            return;
         isLoadingAdded = false;
-
-        int position = movies.size() - 1;
-        Movie item = getItem(position);
-
-        if (item != null) {
-            movies.remove(position);
-            notifyItemRemoved(position);
-        }
     }
 
     public Movie getItem(int position) {

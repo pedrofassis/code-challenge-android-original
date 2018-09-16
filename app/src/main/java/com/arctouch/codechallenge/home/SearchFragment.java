@@ -16,15 +16,11 @@ import android.widget.ProgressBar;
 import com.arctouch.codechallenge.R;
 import com.arctouch.codechallenge.model.Movie;
 
-import java.util.ArrayList;
-
 public class SearchFragment extends Fragment {
     private View v;
     private ProgressBar progressBar;
 
-    private RecyclerView recyclerView;
     private PaginationAdapter adapter;
-    private LinearLayoutManager linearLayoutManager;
     private SearchFragmentInterface listener;
 
     private SearchViewModel model;
@@ -34,11 +30,12 @@ public class SearchFragment extends Fragment {
         super.onActivityCreated(savedInstanceState);
         model = ViewModelProviders.of(getActivity()).get(SearchViewModel.class);
         model.getMoviesList().observe(this, r -> listUpdated());
-        model.setOnReset(() -> reset());
+        model.setOnReset(this::reset);
     }
 
     private void reset() {
-        adapter.clear();
+        adapter.removeLoadingFooter();
+        adapter.notifyDataSetChanged();
         progressBar.setVisibility(View.VISIBLE);
     }
 
@@ -49,12 +46,13 @@ public class SearchFragment extends Fragment {
             v = View.inflate(getActivity(), R.layout.home_fragment, null);
 
         model = ViewModelProviders.of(getActivity()).get(SearchViewModel.class);
-        recyclerView = v.findViewById(R.id.recyclerView);
+        RecyclerView recyclerView = v.findViewById(R.id.recyclerView);
         this.progressBar = v.findViewById(R.id.progressBar);
 
-        adapter = new PaginationAdapter(getActivity());
+        if (adapter == null)
+            adapter = new PaginationAdapter(getActivity(), model.getMoviesList().getValue());
 
-        linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false);
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         recyclerView.setAdapter(adapter);
@@ -85,10 +83,6 @@ public class SearchFragment extends Fragment {
         recyclerView.removeOnItemTouchListener(touchListener);
         recyclerView.addOnItemTouchListener(touchListener);
 
-        adapter.addAll(model.getAllMovies());
-        if (adapter.getItemCount() > 0)
-            progressBar.setVisibility(View.GONE);
-
         return v;
     }
 
@@ -104,12 +98,11 @@ public class SearchFragment extends Fragment {
         else {
             progressBar.setVisibility(View.GONE);
             adapter.removeLoadingFooter();
-            if (model.getMovies(model.getCurrentPage()) != null)
-                adapter.addAll(model.getMovies(model.getCurrentPage()));
             if (!model.isLastPage()) {
                 adapter.addLoadingFooter();
             }
         }
+        adapter.notifyDataSetChanged();
     }
 
     public void setListener(SearchFragmentInterface listener) {

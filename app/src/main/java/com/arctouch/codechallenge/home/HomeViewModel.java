@@ -9,12 +9,11 @@ import com.arctouch.codechallenge.model.Genre;
 import com.arctouch.codechallenge.model.Movie;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class HomeViewModel extends ViewModel {
-    private long totalPages = 10L;
-    private MutableLiveData<HashMap<Long, List<Movie>>> moviesList;
+    private long totalPages = 0;
+    private MutableLiveData<ArrayList<Movie>> moviesList;
 
     private boolean isLoading = false;
     private int currentPage = 0;
@@ -24,29 +23,22 @@ public class HomeViewModel extends ViewModel {
     }
 
     public boolean isLastPage() {
-        return currentPage == totalPages;
+        return currentPage >= totalPages;
     }
 
-    public int getCurrentPage() {
-        return currentPage;
-    }
-
-    public MutableLiveData<HashMap<Long, List<Movie>>> getMoviesList() {
+    public MutableLiveData<ArrayList<Movie>> getMoviesList() {
         if (moviesList == null) {
             moviesList = new MutableLiveData<>();
         }
         return moviesList;
     }
 
-    public List<Movie> getAllMovies() {
-        ArrayList<Movie> res = new ArrayList<>();
-        for (int a = 1; a <= currentPage; a++)
-            res.addAll(getMovies(a));
-        return res;
-    }
-
-    public List<Movie> getMovies(long Page) {
-        return moviesList.getValue().get(Page);
+    public ArrayList<Movie> getMovies() {
+        if (getMoviesList().getValue() == null) {
+            getMoviesList().setValue(new ArrayList<>());
+            loadNextPage();
+        }
+        return getMoviesList().getValue();
     }
 
     public int getTotalPages() {
@@ -64,7 +56,7 @@ public class HomeViewModel extends ViewModel {
 
     private void updateMovies(long Page, List<Movie> Movies) {
         if (moviesList.getValue() == null) {
-            moviesList.setValue(new HashMap<>());
+            moviesList.setValue(new ArrayList<>());
         }
         for (Movie movie : Movies) {
             movie.genres = new ArrayList<>();
@@ -74,13 +66,11 @@ public class HomeViewModel extends ViewModel {
                 }
             }
         }
-        getMoviesList().getValue().put(Page, Movies);
+        getMoviesList().getValue().addAll(Movies);
         getMoviesList().setValue(getMoviesList().getValue());
     }
 
     public boolean loadNextPage() {
-        if (currentPage == totalPages)
-            return false;
         currentPage++;
         updatePage(currentPage);
         return currentPage == totalPages;
