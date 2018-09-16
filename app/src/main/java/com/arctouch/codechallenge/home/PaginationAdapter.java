@@ -54,7 +54,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<PaginationAdapter.Vi
             titleTextView.setText(movie.title);
             genresTextView.setText(TextUtils.join(", ", movie.genres));
             releaseDateTextView.setText(movie.releaseDate);
-
+            posterImageView.setImageResource(R.drawable.ic_image_placeholder);
             String posterPath = movie.posterPath;
             if (!TextUtils.isEmpty(posterPath)) {
                 Glide.with(itemView)
@@ -149,6 +149,8 @@ public class PaginationAdapter extends RecyclerView.Adapter<PaginationAdapter.Vi
     }
 
     public void removeLoadingFooter() {
+        if (!isLoadingAdded)
+            return;
         isLoadingAdded = false;
 
         int position = movies.size() - 1;

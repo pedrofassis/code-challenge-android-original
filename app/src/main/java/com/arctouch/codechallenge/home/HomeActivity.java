@@ -1,6 +1,7 @@
 package com.arctouch.codechallenge.home;
 
 import android.app.SearchManager;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,11 +10,14 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import com.arctouch.codechallenge.R;
+import com.arctouch.codechallenge.api.TmdbApi;
+import com.arctouch.codechallenge.api.TmdbImpl;
 import com.arctouch.codechallenge.model.Movie;
 
 public class HomeActivity extends AppCompatActivity implements FragmentManager.OnBackStackChangedListener {
@@ -28,6 +32,7 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.home_activity);
 
+        TmdbImpl.init(this);
         FragmentManager fm = getSupportFragmentManager();
         fm.addOnBackStackChangedListener(this);
         homeFragment = (HomeFragment) fm.findFragmentByTag("home");
@@ -52,20 +57,28 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
     }
 
     private void showDetails(Movie item) {
+        ViewModelProviders.of(this).get(MovieDetailsViewModel.class).setMovie(item);
         if (movieDetailsFragment == null)
             movieDetailsFragment = new MovieDetailsFragment();
-        movieDetailsFragment.setData(item);
+
+        getSupportFragmentManager().beginTransaction().remove(movieDetailsFragment).commitNow();
         FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.root, movieDetailsFragment, "details").addToBackStack("home");
-        ft.commit();
+        if (!fm.getFragments().contains(movieDetailsFragment)) {
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(R.id.root, movieDetailsFragment, "details").addToBackStack("home");
+            ft.commit();
+        }
     }
 
     private void showSearch(String query) {
+        SearchViewModel model = ViewModelProviders.of(this).get(SearchViewModel.class);
+        model.reset();
+        model.search(query);
         if (searchFragment == null)
             searchFragment = new SearchFragment();
         searchFragment.setListener(this::showDetails);
-        searchFragment.setQuery(query);
+        if (movieDetailsFragment != null)
+            getSupportFragmentManager().beginTransaction().remove(movieDetailsFragment).commitNow();
         if (!searchFragment.isAdded()) {
             FragmentManager fm = getSupportFragmentManager();
             FragmentTransaction ft = fm.beginTransaction();
@@ -73,6 +86,10 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
             ft.commit();
         }
         searchView.clearFocus();
+    }
+
+    public void clearFragmentList() {
+
     }
 
     @Override
@@ -88,7 +105,7 @@ public class HomeActivity extends AppCompatActivity implements FragmentManager.O
             searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextSubmit(String query) {
-                    return query.length() < 4; //number of char to limit
+                    return query.length() < 4;
                 }
 
                 @Override

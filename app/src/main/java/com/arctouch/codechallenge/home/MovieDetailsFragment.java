@@ -1,5 +1,6 @@
 package com.arctouch.codechallenge.home;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -26,10 +27,7 @@ import com.bumptech.glide.request.target.Target;
 
 public class MovieDetailsFragment extends Fragment {
     View v;
-    RelativeLayout root;
-    Movie movie;
-
-    private final MovieImageUrlBuilder movieImageUrlBuilder = new MovieImageUrlBuilder();
+    MovieDetailsViewModel model;
 
     private TextView titleTextView;
     private TextView genresTextView;
@@ -40,9 +38,10 @@ public class MovieDetailsFragment extends Fragment {
     private ImageView backdropImageView;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        model = ViewModelProviders.of(getActivity()).get(MovieDetailsViewModel.class);
+        model.getMovie().observe(this, r -> fillView());
     }
 
     @Nullable
@@ -50,7 +49,6 @@ public class MovieDetailsFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, Bundle savedInstanceState) {
         if (v == null)
             v = View.inflate(getActivity(), R.layout.movie_details, null);
-
         titleTextView = v.findViewById(R.id.titleTextView);
         genresTextView = v.findViewById(R.id.genresTextView);
         releaseDateTextView = v.findViewById(R.id.releaseDateTextView);
@@ -58,18 +56,14 @@ public class MovieDetailsFragment extends Fragment {
         overviewTitleTextView = v.findViewById(R.id.overviewTextView);
         posterImageView = v.findViewById(R.id.posterImageView);
         backdropImageView = v.findViewById(R.id.backdropImageView);
-        root = v.findViewById(R.id.root);
-        fillView();
         return  v;
     }
 
-    public void setData(Movie pMovie) {
-        movie = pMovie;
-        fillView();
-    }
-
     private void fillView() {
-        if ((v == null) || (movie == null))
+        if (v == null)
+            return;
+        Movie movie = model.getMovie().getValue();
+        if (movie == null)
             return;
         backdropImageView.setImageBitmap(null);
         titleTextView.setText(movie.title);
@@ -78,17 +72,17 @@ public class MovieDetailsFragment extends Fragment {
         overviewTextView.setText(movie.overview);
         overviewTitleTextView.setVisibility(movie.overview.length() > 0? View.VISIBLE : View.GONE);
 
-        String posterPath = movie.posterPath;
+        String posterPath = model.getPosterUrl();
         if (!TextUtils.isEmpty(posterPath)) {
             Glide.with(v)
-                    .load(movieImageUrlBuilder.buildPosterUrl(posterPath))
+                    .load(posterPath)
                     .apply(new RequestOptions().placeholder(R.drawable.ic_image_placeholder))
                     .into(posterImageView);
         }
-        String backdropPath = movie.backdropPath;
+        String backdropPath = model.getBackdropUrl();
         if (!TextUtils.isEmpty(backdropPath)) {
             Glide.with(v)
-                    .load(movieImageUrlBuilder.buildBackdropUrl(backdropPath))
+                    .load(backdropPath)
                     .listener(new RequestListener<Drawable>() {
                         @Override
                         public boolean onLoadFailed(@Nullable GlideException e, Object model, Target<Drawable> target, boolean isFirstResource) {
@@ -106,11 +100,5 @@ public class MovieDetailsFragment extends Fragment {
                     })
                     .into(backdropImageView);
         }
-    }
-
-    @Override
-    public void onStop() {
-        v = null;
-        super.onStop();
     }
 }

@@ -12,19 +12,22 @@ import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.moshi.MoshiConverterFactory;
 
-public final class Tmdb {
+public final class TmdbImpl {
 
-    private static Tmdb INSTANCE;
+    private static TmdbImpl INSTANCE;
     private static TmdbApi api;
     private static String DEFAULT_LANGUAGE = "pt-BR";
     private static String DEFAULT_REGION = "BR";
 
-    public static Tmdb getInstance(Context context) {
+    public static void init(Context context) {
+        Locale current = ConfigurationCompat.getLocales(context.getResources().getConfiguration()).get(0);
+        DEFAULT_LANGUAGE = current.toString().replace('_', '-');
+        DEFAULT_REGION = current.getCountry();
+    }
+
+    public static TmdbImpl getInstance() {
         if (INSTANCE == null) {
-            Locale current = ConfigurationCompat.getLocales(context.getResources().getConfiguration()).get(0);
-            DEFAULT_LANGUAGE = current.toString().replace('_', '-');
-            DEFAULT_REGION = current.getCountry();
-            INSTANCE = new Tmdb();
+            INSTANCE = new TmdbImpl();
             api = new Retrofit.Builder()
                     .baseUrl(TmdbApi.URL)
                     .client(new OkHttpClient.Builder().build())
@@ -36,7 +39,7 @@ public final class Tmdb {
         return INSTANCE;
     }
 
-    private Tmdb() { }
+    private TmdbImpl() { }
 
     public void getGenres(TmdbResponse result) {
         if (result == null)
