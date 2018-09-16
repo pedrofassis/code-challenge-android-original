@@ -13,8 +13,7 @@ public interface TmdbApi {
 
     String URL = "https://api.themoviedb.org/3/";
     String API_KEY = "1f54bd990f1cdfb230adb312546d765d";
-    String DEFAULT_LANGUAGE = "pt-BR";
-    String DEFAULT_REGION = "BR";
+
 
     @GET("genre/movie/list")
     Observable<GenreResponse> genres(
@@ -35,5 +34,13 @@ public interface TmdbApi {
             @Path("id") Long id,
             @Query("api_key") String apiKey,
             @Query("language") String language
+    );
+
+    @GET("search/movie")
+    Observable<UpcomingMoviesResponse> searchMovies(
+            @Query("api_key") String apiKey,
+            @Query("language") String language,
+            @Query("page") Long page,
+            @Query("query") String query
     );
 }
